@@ -1,0 +1,136 @@
+General DeereAI Companion
+
+Here is a simple mapping between the given entity classes:
+
+Customer : Many Orders (One-to-Many):
+
+The "Customer" class has a foreign key referencing "Order" class using a "customerId" field.
+Customer : 1 Shopping cart (One-to-One):
+
+The "Customer" class has a foreign key referencing "ShoppingCart" class using a "cartId" field.
+Order : 1 Customer (Many-to-One):
+
+The "Order" class has a foreign key referencing "Customer" class using a "customerId" field.
+Order : Many Products (One-to-Many):
+
+The "Order" class has a list or collection of "Product" objects.
+Please note that the actual mapping annotations like "@ManyToOne", "@OneToMany", and "@JoinColumn" need to be added to the entity classes to establish the database relationships. Additionally, the appropriate getters and setters for the fields should also be implemented in each class.
+
+Give me Code and refactor my entity classes.
+
+Also remember 1 Shopping Cart : 1 Customer
+1 Shopping Cart : Many Products
+Certainly! Here's a refactored version of the entity classes with the necessary code for the mappings you mentioned:
+
+java
+import javax.persistence.*;
+import java.util.List;
+
+@Entity
+public class Customer {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    private String name;
+    private String email;
+    private String mobile;
+    private String location;
+
+    @OneToOne(mappedBy = "customer")
+    private ShoppingCart shoppingCart;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Order> orders;
+
+    // Constructors, getters, and setters
+}
+
+
+@Entity
+public class Order {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    private String orderDescription;
+    @CreationTimestamp
+    private String createdAt;
+    @UpdateTimestamp
+    private String updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+    @OneToMany(mappedBy = "order")
+    private List<Product> products;
+
+    // Constructors, getters, and setters
+}
+
+
+@Entity
+public class Product {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    private String productName;
+    private Integer productQty;
+    private Double productCost;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
+
+    @ManyToOne
+    @JoinColumn(name = "cart_id")
+    private ShoppingCart shoppingCart;
+
+    // Constructors, getters, and setters
+}
+
+
+@Entity
+public class ShoppingCart {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    private Double cartAmount;
+    private Integer cartQuantity;
+
+    @OneToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+    @OneToMany(mappedBy = "shoppingCart")
+    private List<Product> products;
+
+    // Constructors, getters, and setters
+}
+In this refactored code:
+
+The Customer class has a one-to-one mapping with the ShoppingCart class.
+The Customer class has a one-to-many mapping with the Order class.
+The Order class has a many-to-one mapping with the Customer class.
+The Order class has a one-to-many mapping with the Product class.
+The Product class has a many-to-one mapping with the Order class.
+The Product class has a many-to-one mapping with the ShoppingCart class.
+The ShoppingCart class has a one Certainly! Here's the continuation of the code without repeating any information:
+java
+// ... previous code ...
+
+@Entity
+public class ShoppingCart {
+    // ... previous code ...
+
+    @OneToMany(mappedBy = "shoppingCart")
+    private List<Product> products;
+
+    // Constructors, getters, and setters
+}
+In this continuation:
+
+The ShoppingCart class has a one-to-many mapping with the Product class.
+Please note that the code assumes you have the necessary imports and dependencies for the annotations (javax.persistence, @Entity, @OneToOne, @OneToMany, @ManyToOne, @JoinColumn, etc.) and the required methods and constructors such as the default constructors, getters, and setters.
